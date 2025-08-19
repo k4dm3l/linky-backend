@@ -24,4 +24,4 @@ export class InvalidUserDataError extends Error {
     super(`Invalid user data: ${message}`);
     this.name = "InvalidUserDataError";
   }
-} 
+}

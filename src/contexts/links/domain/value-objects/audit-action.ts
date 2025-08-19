@@ -3,7 +3,7 @@ export enum AuditActionEnum {
   ACTIVATED = "ACTIVATED",
   DEACTIVATED = "DEACTIVATED",
   UPDATED = "UPDATED",
-  DELETED = "DELETED"
+  DELETED = "DELETED",
 }
 
 export class AuditAction {
@@ -13,7 +13,9 @@ export class AuditAction {
 
   private validate(): void {
     if (!Object.values(AuditActionEnum).includes(this.value)) {
-      throw new Error(`Invalid audit action: ${this.value}. Must be one of: ${Object.values(AuditActionEnum).join(", ")}`);
+      throw new Error(
+        `Invalid audit action: ${this.value}. Must be one of: ${Object.values(AuditActionEnum).join(", ")}`,
+      );
     }
   }
 
@@ -53,4 +55,4 @@ export class AuditAction {
   toString(): string {
     return this.value;
   }
-} 
+}

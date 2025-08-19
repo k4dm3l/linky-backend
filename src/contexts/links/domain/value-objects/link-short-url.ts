@@ -1,4 +1,8 @@
-import { LinkUrlEmptyException, LinkUrlInvalidException, LinkUrlInvalidProtocolException } from "@/contexts/links/domain/exceptions/link-exceptions";
+import {
+  LinkUrlEmptyException,
+  LinkUrlInvalidException,
+  LinkUrlInvalidProtocolException,
+} from "@/contexts/links/domain/exceptions/link-exceptions";
 
 export class LinkShortUrl {
   constructor(private readonly value: string) {
@@ -15,7 +19,7 @@ export class LinkShortUrl {
       if (!["http:", "https:"].includes(url.protocol)) {
         throw new LinkUrlInvalidProtocolException();
       }
-    } catch (error) {
+    } catch {
       throw new LinkUrlInvalidException();
     }
   }
@@ -53,4 +57,4 @@ export class LinkShortUrl {
   toString(): string {
     return this.value;
   }
-} 
+}

@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { Logger } from "./logger";
+import { Logger } from "@/contexts/shared/logger/logger";
 
 export class ConsoleLogger implements Logger {
   info(message: string, attributes: unknown = {}) {
@@ -7,7 +7,7 @@ export class ConsoleLogger implements Logger {
       level: "info",
       message,
       attributes,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     console.log(msg);
@@ -18,7 +18,7 @@ export class ConsoleLogger implements Logger {
       level: "error",
       message,
       attributes,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     console.error(msg);
@@ -29,7 +29,7 @@ export class ConsoleLogger implements Logger {
       level: "warn",
       message,
       attributes,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     console.warn(msg);
@@ -40,7 +40,7 @@ export class ConsoleLogger implements Logger {
       level: "debug",
       message,
       attributes,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     console.debug(msg);

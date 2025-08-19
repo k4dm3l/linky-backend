@@ -36,4 +36,4 @@ export interface UserStatisticsDto {
   usersCreatedToday: number;
   usersCreatedThisWeek: number;
   usersCreatedThisMonth: number;
-} 
+}

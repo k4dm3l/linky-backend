@@ -1,8 +1,8 @@
-import { UserId } from "@/contexts/users/domain/value-objects/user-id";
 import { Email } from "@/contexts/users/domain/value-objects/email";
+import { UserId } from "@/contexts/users/domain/value-objects/user-id";
 import { UserName } from "@/contexts/users/domain/value-objects/user-name";
-import { UserRole } from "@/contexts/users/domain/value-objects/user-role";
 import { UserPlan } from "@/contexts/users/domain/value-objects/user-plan";
+import { UserRole } from "@/contexts/users/domain/value-objects/user-role";
 
 export class User {
   constructor(
@@ -11,24 +11,24 @@ export class User {
     private readonly name: UserName,
     private readonly createdAt: Date,
     private readonly profileImage: string | null = null,
-    private readonly isActive: boolean = true,
-    private readonly isVerified: boolean = true,
+    private readonly isActive = true,
+    private readonly isVerified = true,
     private readonly role: UserRole = UserRole.user(),
-    private readonly plan: UserPlan = UserPlan.standard()
+    private readonly plan: UserPlan = UserPlan.standard(),
   ) {}
 
   // Business logic methods
   updateProfile(newName: UserName): User {
     return new User(
-      this.id, 
-      this.email, 
-      newName, 
+      this.id,
+      this.email,
+      newName,
       this.createdAt,
       this.profileImage,
       this.isActive,
       this.isVerified,
       this.role,
-      this.plan
+      this.plan,
     );
   }
 
@@ -42,21 +42,21 @@ export class User {
       this.isActive,
       this.isVerified,
       this.role,
-      this.plan
+      this.plan,
     );
   }
 
   changeEmail(newEmail: Email): User {
     return new User(
-      this.id, 
-      newEmail, 
-      this.name, 
+      this.id,
+      newEmail,
+      this.name,
       this.createdAt,
       this.profileImage,
       this.isActive,
       this.isVerified,
       this.role,
-      this.plan
+      this.plan,
     );
   }
 
@@ -70,7 +70,7 @@ export class User {
       true,
       this.isVerified,
       this.role,
-      this.plan
+      this.plan,
     );
   }
 
@@ -84,7 +84,7 @@ export class User {
       false,
       this.isVerified,
       this.role,
-      this.plan
+      this.plan,
     );
   }
 
@@ -98,7 +98,7 @@ export class User {
       this.isActive,
       true,
       this.role,
-      this.plan
+      this.plan,
     );
   }
 
@@ -112,7 +112,7 @@ export class User {
       this.isActive,
       false,
       this.role,
-      this.plan
+      this.plan,
     );
   }
 
@@ -126,7 +126,7 @@ export class User {
       this.isActive,
       this.isVerified,
       newRole,
-      this.plan
+      this.plan,
     );
   }
 
@@ -140,7 +140,7 @@ export class User {
       this.isActive,
       this.isVerified,
       this.role,
-      UserPlan.premium()
+      UserPlan.premium(),
     );
   }
 
@@ -154,7 +154,7 @@ export class User {
       this.isActive,
       this.isVerified,
       this.role,
-      UserPlan.standard()
+      UserPlan.standard(),
     );
   }
 
@@ -168,7 +168,7 @@ export class User {
       this.isActive,
       this.isVerified,
       this.role,
-      newPlan
+      newPlan,
     );
   }
 
@@ -184,7 +184,9 @@ export class User {
   }
 
   canAccessPremiumFeatures(): boolean {
-    return this.isActive && this.isVerified && this.plan.canAccessPremiumFeatures();
+    return (
+      this.isActive && this.isVerified && this.plan.canAccessPremiumFeatures()
+    );
   }
 
   // Getters - immutable access to properties
@@ -223,4 +225,4 @@ export class User {
   getPlan(): UserPlan {
     return this.plan;
   }
-} 
+}

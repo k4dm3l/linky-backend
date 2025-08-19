@@ -7,4 +7,4 @@ export interface AuthenticateUserQueryResult {
   userId: string;
   email: string;
   token: string;
-} 
+}

@@ -1,6 +1,7 @@
 import rateLimit from "express-rate-limit";
-import { rateLimitSettings } from "@/app/config/rate-limit-config";
 import { StatusCodes } from "http-status-codes";
+
+import { rateLimitSettings } from "@/app/config/rate-limit-config";
 
 export interface RateLimitConfig {
   windowMs: number;
@@ -47,14 +48,19 @@ export const authRateLimitConfig: RateLimitConfig = {
 // Custom key generator for more granular rate limiting
 export const customKeyGenerator = (req: any): string => {
   // Use API key if available, otherwise fall back to IP
-  return req.headers['x-api-key'] || req.ip || req.connection.remoteAddress || 'unknown';
+  return (
+    req.headers["x-api-key"] ||
+    req.ip ||
+    req.connection.remoteAddress ||
+    "unknown"
+  );
 };
 
 // Custom handler for rate limit exceeded
 export const customRateLimitHandler = (req: any, res: any): void => {
   res.status(StatusCodes.TOO_MANY_REQUESTS).json({
-    error: 'Too Many Requests',
-    message: 'Rate limit exceeded. Please try again later.',
+    error: "Too Many Requests",
+    message: "Rate limit exceeded. Please try again later.",
     retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
   });
 };
@@ -77,4 +83,4 @@ export function createStrictRateLimiter() {
 
 export function createAuthRateLimiter() {
   return createRateLimiter(authRateLimitConfig);
-} 
+}

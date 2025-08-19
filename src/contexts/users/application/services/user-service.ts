@@ -1,15 +1,21 @@
-import { User } from "@/contexts/users/domain/entities/user";
-import { UserId } from "@/contexts/users/domain/value-objects/user-id";
-import { Email } from "@/contexts/users/domain/value-objects/email";
-import { UserName } from "@/contexts/users/domain/value-objects/user-name";
-import { UserRepository, Transaction } from "@/contexts/users/domain/repositories/user-repository";
 import { TransactionManager } from "@/contexts/shared/infrastructure/transaction/transaction-manager";
-import { UserAlreadyExistsError, UserNotFoundError } from "@/contexts/users/domain/exceptions/user-exceptions";
+import { User } from "@/contexts/users/domain/entities/user";
+import {
+  UserAlreadyExistsError,
+  UserNotFoundError,
+} from "@/contexts/users/domain/exceptions/user-exceptions";
+import {
+  Transaction,
+  UserRepository,
+} from "@/contexts/users/domain/repositories/user-repository";
+import { Email } from "@/contexts/users/domain/value-objects/email";
+import { UserId } from "@/contexts/users/domain/value-objects/user-id";
+import { UserName } from "@/contexts/users/domain/value-objects/user-name";
 
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly transactionManager: TransactionManager
+    private readonly transactionManager: TransactionManager,
   ) {}
 
   // Example of a simple operation without transaction
@@ -30,12 +36,7 @@ export class UserService {
     }
 
     // Create new user with generated ID
-    const user = new User(
-      UserId.generate(),
-      email,
-      name,
-      new Date()
-    );
+    const user = new User(UserId.generate(), email, name, new Date());
 
     // Save to repository
     await this.userRepository.save(user);
@@ -51,7 +52,10 @@ export class UserService {
       transaction = await this.transactionManager.beginTransaction();
 
       // Get both users within the transaction
-      const fromUser = await this.userRepository.findById(fromUserId, transaction);
+      const fromUser = await this.userRepository.findById(
+        fromUserId,
+        transaction,
+      );
       const toUser = await this.userRepository.findById(toUserId, transaction);
 
       if (!fromUser) {
@@ -71,7 +75,6 @@ export class UserService {
 
       // Commit the transaction
       await this.transactionManager.commitTransaction(transaction);
-
     } catch (error) {
       // Rollback on any error
       if (transaction) {
@@ -82,7 +85,9 @@ export class UserService {
   }
 
   // Example of bulk operations with transaction
-  async bulkUpdateUsers(userUpdates: Array<{ id: UserId; name: UserName }>): Promise<void> {
+  async bulkUpdateUsers(
+    userUpdates: { id: UserId; name: UserName }[],
+  ): Promise<void> {
     let transaction: Transaction | undefined;
 
     try {
@@ -99,7 +104,6 @@ export class UserService {
       }
 
       await this.transactionManager.commitTransaction(transaction);
-
     } catch (error) {
       if (transaction) {
         await this.transactionManager.rollbackTransaction(transaction);
@@ -110,9 +114,9 @@ export class UserService {
 
   // Example of conditional transaction usage
   async updateUserConditionally(
-    userId: UserId, 
-    newName: UserName, 
-    useTransaction: boolean = false
+    userId: UserId,
+    newName: UserName,
+    useTransaction = false,
   ): Promise<User> {
     if (!useTransaction) {
       // Simple operation without transaction
@@ -142,7 +146,6 @@ export class UserService {
 
       await this.transactionManager.commitTransaction(transaction);
       return updatedUser;
-
     } catch (error) {
       if (transaction) {
         await this.transactionManager.rollbackTransaction(transaction);
@@ -157,13 +160,19 @@ export class UserService {
 
     try {
       // First operation in outer transaction
-      const user1 = await this.userRepository.findById(UserId.generate(), outerTransaction);
-      
+      const user1 = await this.userRepository.findById(
+        UserId.generate(),
+        outerTransaction,
+      );
+
       // Nested transaction (this would typically be handled differently in real databases)
       const innerTransaction = await this.transactionManager.beginTransaction();
-      
+
       try {
-        const user2 = await this.userRepository.findById(UserId.generate(), innerTransaction);
+        const user2 = await this.userRepository.findById(
+          UserId.generate(),
+          innerTransaction,
+        );
         await this.transactionManager.commitTransaction(innerTransaction);
       } catch (error) {
         await this.transactionManager.rollbackTransaction(innerTransaction);
@@ -171,10 +180,9 @@ export class UserService {
       }
 
       await this.transactionManager.commitTransaction(outerTransaction);
-
     } catch (error) {
       await this.transactionManager.rollbackTransaction(outerTransaction);
       throw error;
     }
   }
-} 
+}

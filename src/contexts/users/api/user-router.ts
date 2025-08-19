@@ -1,8 +1,16 @@
 import express from "express";
-import { UserController } from "@/contexts/users/api/user-controller";
+
 import { authenticateJwt } from "@/app/infrastructure/passport/auth-middleware";
-import { validateQuery, validateParams } from "@/app/infrastructure/validation/validation-middleware";
-import { getUsersQuerySchema, getUserParamsSchema } from "@/contexts/users/api/validation-schemas";
+import {
+  validateParams,
+  validateQuery,
+} from "@/app/infrastructure/validation/validation-middleware";
+
+import { UserController } from "@/contexts/users/api/user-controller";
+import {
+  getUserParamsSchema,
+  getUsersQuerySchema,
+} from "@/contexts/users/api/validation-schemas";
 
 const userRouter = express.Router();
 
@@ -20,30 +28,34 @@ export function setRateLimitService(service: any): void {
 
 // GET /api/users - Get all users with pagination and filtering
 // Requires authentication and applies strict rate limiting for read operations
-userRouter.get("/", 
+userRouter.get(
+  "/",
   authenticateJwt,
   validateQuery(getUsersQuerySchema),
-  rateLimitService?.getStrictLimiter() || ((req: any, res: any, next: any) => next()),
+  rateLimitService?.getStrictLimiter() ||
+    ((req: any, res: any, next: any) => next()),
   (req, res) => {
-    userController.getUsers(req, res).catch((error) => {
+    userController.getUsers(req, res).catch(error => {
       console.error("Error in getUsers:", error);
       res.status(500).json({ error: "Internal server error" });
     });
-  }
+  },
 );
 
 // GET /api/users/:id - Get a specific user by ID
 // Requires authentication and applies strict rate limiting for read operations
-userRouter.get("/:id", 
+userRouter.get(
+  "/:id",
   authenticateJwt,
   validateParams(getUserParamsSchema),
-  rateLimitService?.getStrictLimiter() || ((req: any, res: any, next: any) => next()),
+  rateLimitService?.getStrictLimiter() ||
+    ((req: any, res: any, next: any) => next()),
   (req, res) => {
-    userController.getUser(req, res).catch((error) => {
+    userController.getUser(req, res).catch(error => {
       console.error("Error in getUser:", error);
       res.status(500).json({ error: "Internal server error" });
     });
-  }
+  },
 );
 
 export { userRouter };

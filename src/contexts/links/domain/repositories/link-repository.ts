@@ -1,7 +1,7 @@
 import { Link } from "@/contexts/links/domain/entities/link";
+import { LinkCode } from "@/contexts/links/domain/value-objects/link-code";
 import { LinkId } from "@/contexts/links/domain/value-objects/link-id";
 import { LinkOriginalUrl } from "@/contexts/links/domain/value-objects/link-original-url";
-import { LinkCode } from "@/contexts/links/domain/value-objects/link-code";
 import { LinkShortUrl } from "@/contexts/links/domain/value-objects/link-short-url";
 
 export interface LinkRepository {
@@ -14,14 +14,20 @@ export interface LinkRepository {
   activate(id: LinkId): Promise<void>;
   updateExpirationDate(id: LinkId, expirationDate: Date | null): Promise<void>;
   updateIsOneTimeLink(id: LinkId, isOneTimeLink: boolean): Promise<void>;
-  updateIsOneTimeLinkUsed(id: LinkId, isOneTimeLinkUsed: boolean): Promise<void>;
+  updateIsOneTimeLinkUsed(
+    id: LinkId,
+    isOneTimeLinkUsed: boolean,
+  ): Promise<void>;
 
   // Query operations
   findAll(): Promise<Link[]>;
   findByOriginalUrl(originalUrl: LinkOriginalUrl): Promise<Link[]>;
 
   // Pagination support
-  findWithPagination(offset: number, limit: number): Promise<{
+  findWithPagination(
+    offset: number,
+    limit: number,
+  ): Promise<{
     links: Link[];
     total: number;
     hasMore: boolean;

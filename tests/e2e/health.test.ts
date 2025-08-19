@@ -24,7 +24,9 @@ describe("Health", () => {
   });
 
   it("/GET api/health", async () => {
-    const response = await request(server.getHttpServer()).get("/api/v1/health");
+    const response = await request(server.getHttpServer()).get(
+      "/api/v1/health",
+    );
     expect(response.status).toBe(StatusCodes.OK);
   });
 });

@@ -10,12 +10,12 @@ export interface TransactionManager {
 
 // In-memory transaction manager for testing
 export class InMemoryTransactionManager implements TransactionManager {
-  private activeTransactions: Map<string, Transaction> = new Map();
+  private activeTransactions = new Map<string, Transaction>();
 
   async beginTransaction(): Promise<Transaction> {
     // Generate transaction ID once
-    const transactionId = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+    const transactionId = `tx_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+
     // For in-memory, we create a mock transaction that properly tracks state
     const transaction: Transaction = {
       commit: async () => {
@@ -30,7 +30,7 @@ export class InMemoryTransactionManager implements TransactionManager {
         // Same as rollback for in-memory
         await this.rollbackTransaction(transaction);
       },
-      getId: () => transactionId
+      getId: () => transactionId,
     };
 
     // Initialize transaction state
@@ -85,12 +85,14 @@ export class InMemoryTransactionManager implements TransactionManager {
   }
 
   // Helper method to check transaction status
-  getTransactionStatus(transactionId: string): 'active' | 'committed' | 'rolledback' | 'not_found' {
+  getTransactionStatus(
+    transactionId: string,
+  ): "active" | "committed" | "rolledback" | "not_found" {
     const tx = this.activeTransactions.get(transactionId);
-    if (!tx) return 'not_found';
-    if ((tx as any).isCommitted) return 'committed';
-    if ((tx as any).isRolledBack) return 'rolledback';
-    return 'active';
+    if (!tx) return "not_found";
+    if ((tx as any).isCommitted) return "committed";
+    if ((tx as any).isRolledBack) return "rolledback";
+    return "active";
   }
 }
 
@@ -100,10 +102,10 @@ export class KnexTransactionManager implements TransactionManager {
 
   async beginTransaction(): Promise<Transaction> {
     const knexTransaction = await this.knex.transaction();
-    
+
     // Generate transaction ID once
-    const transactionId = `knex_tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+    const transactionId = `knex_tx_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+
     const transaction: Transaction = {
       commit: async () => {
         await knexTransaction.commit();
@@ -114,12 +116,12 @@ export class KnexTransactionManager implements TransactionManager {
       abort: async () => {
         await knexTransaction.rollback();
       },
-      getId: () => transactionId
+      getId: () => transactionId,
     };
 
     // Store the knex transaction for repository access
     (transaction as any).knexTransaction = knexTransaction;
-    
+
     return transaction;
   }
 
@@ -148,10 +150,10 @@ export class MongoTransactionManager implements TransactionManager {
   async beginTransaction(): Promise<Transaction> {
     const session = this.mongoClient.startSession();
     await session.startTransaction();
-    
+
     // Generate transaction ID once
-    const transactionId = `mongo_tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+    const transactionId = `mongo_tx_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+
     const transaction: Transaction = {
       commit: async () => {
         await session.commitTransaction();
@@ -165,12 +167,12 @@ export class MongoTransactionManager implements TransactionManager {
         await session.abortTransaction();
         await session.endSession();
       },
-      getId: () => transactionId
+      getId: () => transactionId,
     };
 
     // Store the mongo session for repository access
     (transaction as any).mongoSession = session;
-    
+
     return transaction;
   }
 
@@ -190,4 +192,4 @@ export class MongoTransactionManager implements TransactionManager {
   getMongoSession(transaction: Transaction): any {
     return (transaction as any).mongoSession;
   }
-} 
+}

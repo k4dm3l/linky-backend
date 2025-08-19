@@ -1,4 +1,8 @@
-import { UserDto, UserListDto, UserStatisticsDto } from "../dtos/user-dto";
+import {
+  UserDto,
+  UserListDto,
+  UserStatisticsDto,
+} from "@/contexts/users/application/dtos/user-dto";
 
 export interface ApplicationResult<T = void> {
   success: boolean;
@@ -7,10 +11,10 @@ export interface ApplicationResult<T = void> {
   errorCode?: string;
 }
 
-export interface CreateUserResult extends ApplicationResult<UserDto> {}
-export interface UpdateUserResult extends ApplicationResult<UserDto> {}
-export interface ChangeEmailResult extends ApplicationResult<UserDto> {}
-export interface DeleteUserResult extends ApplicationResult<void> {}
-export interface GetUserResult extends ApplicationResult<UserDto> {}
-export interface GetUsersResult extends ApplicationResult<UserListDto> {}
-export interface GetUserStatisticsResult extends ApplicationResult<UserStatisticsDto> {} 
+export type CreateUserResult = ApplicationResult<UserDto>;
+export type UpdateUserResult = ApplicationResult<UserDto>;
+export type ChangeEmailResult = ApplicationResult<UserDto>;
+export type DeleteUserResult = ApplicationResult;
+export type GetUserResult = ApplicationResult<UserDto>;
+export type GetUsersResult = ApplicationResult<UserListDto>;
+export type GetUserStatisticsResult = ApplicationResult<UserStatisticsDto>;

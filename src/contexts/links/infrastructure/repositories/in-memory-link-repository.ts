@@ -1,12 +1,12 @@
 import { Link } from "@/contexts/links/domain/entities/link";
+import { LinkRepository } from "@/contexts/links/domain/repositories/link-repository";
+import { LinkCode } from "@/contexts/links/domain/value-objects/link-code";
 import { LinkId } from "@/contexts/links/domain/value-objects/link-id";
 import { LinkOriginalUrl } from "@/contexts/links/domain/value-objects/link-original-url";
-import { LinkCode } from "@/contexts/links/domain/value-objects/link-code";
 import { LinkShortUrl } from "@/contexts/links/domain/value-objects/link-short-url";
-import { LinkRepository } from "@/contexts/links/domain/repositories/link-repository";
 
 export class InMemoryLinkRepository implements LinkRepository {
-  private links: Map<string, Link> = new Map();
+  private links = new Map<string, Link>();
   private transactionActive = false;
   private transactionLinks: Map<string, Link> | null = null;
 
@@ -26,7 +26,7 @@ export class InMemoryLinkRepository implements LinkRepository {
     }
     return null;
   }
-  
+
   async findByShortUrl(shortUrl: LinkShortUrl): Promise<Link | null> {
     const links = this.transactionActive ? this.transactionLinks! : this.links;
     const shortUrlValue = shortUrl.getValue();
@@ -38,7 +38,7 @@ export class InMemoryLinkRepository implements LinkRepository {
     }
     return null;
   }
-  
+
   async save(link: Link): Promise<void> {
     const links = this.transactionActive ? this.transactionLinks! : this.links;
     links.set(link.getId().getValue(), link);
@@ -48,7 +48,7 @@ export class InMemoryLinkRepository implements LinkRepository {
     const links = this.transactionActive ? this.transactionLinks! : this.links;
     links.delete(id.getValue());
   }
-  
+
   async deactivate(id: LinkId): Promise<void> {
     const links = this.transactionActive ? this.transactionLinks! : this.links;
     const link = links.get(id.getValue());
@@ -63,11 +63,14 @@ export class InMemoryLinkRepository implements LinkRepository {
     const link = links.get(id.getValue());
     if (link) {
       link.activate();
-      links.set(id.getValue(), link); 
+      links.set(id.getValue(), link);
     }
   }
 
-  async updateExpirationDate(id: LinkId, expirationDate: Date | null): Promise<void> {
+  async updateExpirationDate(
+    id: LinkId,
+    expirationDate: Date | null,
+  ): Promise<void> {
     const links = this.transactionActive ? this.transactionLinks! : this.links;
     const link = links.get(id.getValue());
     if (link) {
@@ -85,7 +88,10 @@ export class InMemoryLinkRepository implements LinkRepository {
     }
   }
 
-  async updateIsOneTimeLinkUsed(id: LinkId, isOneTimeLinkUsed: boolean): Promise<void> {
+  async updateIsOneTimeLinkUsed(
+    id: LinkId,
+    isOneTimeLinkUsed: boolean,
+  ): Promise<void> {
     const links = this.transactionActive ? this.transactionLinks! : this.links;
     const link = links.get(id.getValue());
     if (link) {
@@ -96,7 +102,7 @@ export class InMemoryLinkRepository implements LinkRepository {
 
   async findAll(): Promise<Link[]> {
     const links = this.transactionActive ? this.transactionLinks! : this.links;
-    return Array.from(links.values());
+    return [...links.values()];
   }
 
   async findByOriginalUrl(originalUrl: LinkOriginalUrl): Promise<Link[]> {
@@ -111,14 +117,17 @@ export class InMemoryLinkRepository implements LinkRepository {
     }
     return result;
   }
-  
-  async findWithPagination(offset: number, limit: number): Promise<{
+
+  async findWithPagination(
+    offset: number,
+    limit: number,
+  ): Promise<{
     links: Link[];
     total: number;
     hasMore: boolean;
   }> {
     const links = this.transactionActive ? this.transactionLinks! : this.links;
-    const allLinks = Array.from(links.values());
+    const allLinks = [...links.values()];
     const total = allLinks.length;
     const hasMore = total > offset + limit;
     const paginatedLinks = allLinks.slice(offset, offset + limit);

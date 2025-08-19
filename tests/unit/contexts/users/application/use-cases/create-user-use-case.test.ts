@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { ConsoleLogger } from "@/shared/logger/console-logger";
+
 import { CreateUserUseCase } from "@/contexts/users/application/use-cases/create-user-use-case";
 import { UserDomainService } from "@/contexts/users/domain/services/user-domain-service";
 import { InMemoryUserRepository } from "@/contexts/users/infrastructure/repositories/in-memory-user-repository";
-import { ConsoleLogger } from "@/shared/logger/console-logger";
-// import { UserAlreadyExistsError } from "@/contexts/users/domain/exceptions/user-exceptions";
 
 describe("CreateUserUseCase", () => {
   let useCase: CreateUserUseCase;
@@ -21,7 +22,7 @@ describe("CreateUserUseCase", () => {
   it("should create a user successfully", async () => {
     const command = {
       email: "test@example.com",
-      name: "John Doe"
+      name: "John Doe",
     };
 
     const result = await useCase.execute(command);
@@ -37,7 +38,7 @@ describe("CreateUserUseCase", () => {
   it("should return validation error for missing email", async () => {
     const command = {
       email: "",
-      name: "John Doe"
+      name: "John Doe",
     };
 
     const result = await useCase.execute(command);
@@ -50,7 +51,7 @@ describe("CreateUserUseCase", () => {
   it("should return validation error for missing name", async () => {
     const command = {
       email: "test@example.com",
-      name: ""
+      name: "",
     };
 
     const result = await useCase.execute(command);
@@ -63,7 +64,7 @@ describe("CreateUserUseCase", () => {
   it("should return validation error for invalid email format", async () => {
     const command = {
       email: "invalid-email",
-      name: "John Doe"
+      name: "John Doe",
     };
 
     const result = await useCase.execute(command);
@@ -76,7 +77,7 @@ describe("CreateUserUseCase", () => {
   it("should return validation error for invalid name format", async () => {
     const command = {
       email: "test@example.com",
-      name: "J" // Too short
+      name: "J", // Too short
     };
 
     const result = await useCase.execute(command);
@@ -90,33 +91,40 @@ describe("CreateUserUseCase", () => {
     // Create first user
     const command1 = {
       email: "test@example.com",
-      name: "John Doe"
+      name: "John Doe",
     };
     await useCase.execute(command1);
 
     // Try to create second user with same email
     const command2 = {
       email: "test@example.com",
-      name: "Jane Smith"
+      name: "Jane Smith",
     };
     const result = await useCase.execute(command2);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("User with email test@example.com already exists");
+    expect(result.error).toBe(
+      "User with email test@example.com already exists",
+    );
     expect(result.errorCode).toBe("INTERNAL_ERROR");
   });
 
   it("should handle unexpected errors gracefully", async () => {
     // Mock the domain service to throw an unexpected error
     const mockDomainService = {
-      createUser: vi.fn().mockRejectedValue(new Error("Database connection failed"))
+      createUser: vi
+        .fn()
+        .mockRejectedValue(new Error("Database connection failed")),
     };
 
-    const useCaseWithMock = new CreateUserUseCase(mockDomainService as any, logger);
+    const useCaseWithMock = new CreateUserUseCase(
+      mockDomainService as any,
+      logger,
+    );
 
     const command = {
       email: "test@example.com",
-      name: "John Doe"
+      name: "John Doe",
     };
 
     const result = await useCaseWithMock.execute(command);
@@ -125,4 +133,4 @@ describe("CreateUserUseCase", () => {
     expect(result.error).toBe("Database connection failed");
     expect(result.errorCode).toBe("INTERNAL_ERROR");
   });
-}); 
+});

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Schema, ValidationError } from "joi";
 
@@ -10,7 +10,7 @@ export interface ValidationOptions {
 
 export function validateRequest(
   schema: Schema,
-  options: ValidationOptions = {}
+  options: ValidationOptions = {},
 ): (req: Request, res: Response, next: NextFunction) => void {
   return (req: Request, res: Response, next: NextFunction) => {
     const validationOptions = {
@@ -24,8 +24,8 @@ export function validateRequest(
     const { error, value } = schema.validate(req.body ?? {}, validationOptions);
 
     if (error) {
-      const errorDetails = error.details.map((detail) => ({
-        field: detail.path.join('.'),
+      const errorDetails = error.details.map(detail => ({
+        field: detail.path.join("."),
         message: detail.message,
         type: detail.type,
       }));
@@ -34,7 +34,7 @@ export function validateRequest(
         error: "Validation Error",
         message: "Request validation failed",
         details: errorDetails,
-        errorCode: "VALIDATION_ERROR"
+        errorCode: "VALIDATION_ERROR",
       });
     }
 
@@ -46,7 +46,7 @@ export function validateRequest(
 
 export function validateQuery(
   schema: Schema,
-  options: ValidationOptions = {}
+  options: ValidationOptions = {},
 ): (req: Request, res: Response, next: NextFunction) => void {
   return (req: Request, res: Response, next: NextFunction) => {
     const validationOptions = {
@@ -60,8 +60,8 @@ export function validateQuery(
     const { error, value } = schema.validate(req.query, validationOptions);
 
     if (error) {
-      const errorDetails = error.details.map((detail) => ({
-        field: detail.path.join('.'),
+      const errorDetails = error.details.map(detail => ({
+        field: detail.path.join("."),
         message: detail.message,
         type: detail.type,
       }));
@@ -70,7 +70,7 @@ export function validateQuery(
         error: "Validation Error",
         message: "Query validation failed",
         details: errorDetails,
-        errorCode: "VALIDATION_ERROR"
+        errorCode: "VALIDATION_ERROR",
       });
     }
 
@@ -81,7 +81,7 @@ export function validateQuery(
 
 export function validateParams(
   schema: Schema,
-  options: ValidationOptions = {}
+  options: ValidationOptions = {},
 ): (req: Request, res: Response, next: NextFunction) => void {
   return (req: Request, res: Response, next: NextFunction) => {
     const validationOptions = {
@@ -95,8 +95,8 @@ export function validateParams(
     const { error, value } = schema.validate(req.params, validationOptions);
 
     if (error) {
-      const errorDetails = error.details.map((detail) => ({
-        field: detail.path.join('.'),
+      const errorDetails = error.details.map(detail => ({
+        field: detail.path.join("."),
         message: detail.message,
         type: detail.type,
       }));
@@ -105,11 +105,11 @@ export function validateParams(
         error: "Validation Error",
         message: "Parameter validation failed",
         details: errorDetails,
-        errorCode: "VALIDATION_ERROR"
+        errorCode: "VALIDATION_ERROR",
       });
     }
 
     // Validation passed, continue to next middleware
     next();
   };
-} 
+}

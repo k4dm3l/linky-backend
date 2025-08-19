@@ -1,27 +1,32 @@
 import http from "node:http";
 import { AddressInfo } from "node:net";
 
-import express, { Express } from "express";
 import compression from "compression";
+import express, { Express } from "express";
 import helmet from "helmet";
 import passport from "passport";
 
 import { config } from "@/app/config/config";
-import { healthRouter } from "@/app/health/api/health-router";
 import { setupContainer } from "@/app/di/setup";
-import { setUserController, setRateLimitService } from "@/contexts/users/api/user-router";
-import { setAuthController } from "@/contexts/auth/api/auth-router";
-import { UserController } from "@/contexts/users/api/user-controller";
-import { AuthController } from "@/contexts/auth/api/auth-controller";
-import { RateLimitService } from "@/app/infrastructure/rate-limiting/rate-limit-service";
-import { configurePassport } from "@/app/infrastructure/passport/passport-config";
+import { healthRouter } from "@/app/health/api/health-router";
 import { notFoundMiddleware } from "@/app/infrastructure/middleware/not-found-middleware";
+import { configurePassport } from "@/app/infrastructure/passport/passport-config";
+import { RateLimitService } from "@/app/infrastructure/rate-limiting/rate-limit-service";
 
 import { ConsoleLogger } from "@/shared/logger/console-logger";
 import { Logger } from "@/shared/logger/logger";
 
-import { userRouter } from "@/contexts/users/api/user-router";
+import { AuthController } from "@/contexts/auth/api/auth-controller";
+import { setAuthController } from "@/contexts/auth/api/auth-router";
 import { authRouter } from "@/contexts/auth/api/auth-router";
+import { UserController } from "@/contexts/users/api/user-controller";
+import {
+  setRateLimitService,
+  setUserController,
+} from "@/contexts/users/api/user-router";
+import { userRouter } from "@/contexts/users/api/user-router";
+import { UserCredentialsRepository } from "@/contexts/auth/domain/repositories/user-credentials-repository";
+import { UserRepository } from "@/contexts/users/domain/repositories/user-repository";
 
 export class Server {
   private readonly app: Express;
@@ -33,7 +38,7 @@ export class Server {
     this.logger = new ConsoleLogger();
     this.container = setupContainer();
     this.app = express();
-    
+
     this.setupMiddleware();
     this.setupRoutes();
   }
@@ -49,31 +54,38 @@ export class Server {
     this.app.use(passport.initialize());
 
     // Configure Passport with JWT strategy
-    const userCredentialsRepository = this.container.resolve("userCredentialsRepository") as any;
-    const userRepository = this.container.resolve("userRepository") as any;
-    
+    const userCredentialsRepository = this.container.resolve(
+      "userCredentialsRepository",
+    ) as unknown as UserCredentialsRepository;
+    const userRepository = this.container.resolve(
+      "userRepository",
+    ) as unknown as UserRepository;
+
     configurePassport(userCredentialsRepository, userRepository);
   }
 
   private setupRoutes(): void {
     // Health check endpoint (no rate limiting for health checks)
     this.app.use(`/api/${config.apiVersion}/health`, healthRouter);
-    
+
     // Set up controllers and rate limit service with dependency injection
-    const userController = this.container.resolve<UserController>("userController");
-    const authController = this.container.resolve<AuthController>("authController");
-    const rateLimitService = this.container.resolve<RateLimitService>("rateLimitService");
-    
+    const userController =
+      this.container.resolve<UserController>("userController");
+    const authController =
+      this.container.resolve<AuthController>("authController");
+    const rateLimitService =
+      this.container.resolve<RateLimitService>("rateLimitService");
+
     setUserController(userController);
     setAuthController(authController);
     setRateLimitService(rateLimitService);
-    
+
     // Global rate limiting for all routes EXCEPT health (applied after health route)
     this.app.use(rateLimitService.getGlobalLimiter());
-    
+
     // Auth endpoints with specific rate limiting applied in the router
     this.app.use(`/api/${config.apiVersion}/auth`, authRouter);
-    
+
     // User endpoints with specific rate limiting applied in the router
     this.app.use(`/api/${config.apiVersion}/users`, userRouter);
 

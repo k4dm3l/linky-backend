@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+
 import { User } from "@/contexts/users/domain/entities/user";
-import { UserId } from "@/contexts/users/domain/value-objects/user-id";
 import { Email } from "@/contexts/users/domain/value-objects/email";
+import { UserId } from "@/contexts/users/domain/value-objects/user-id";
 import { UserName } from "@/contexts/users/domain/value-objects/user-name";
 
 describe("User Entity", () => {
@@ -76,4 +77,4 @@ describe("User Entity", () => {
       expect(user.canBeDeleted()).toBe(false);
     });
   });
-}); 
+});

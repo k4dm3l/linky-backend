@@ -18,4 +18,4 @@ export interface RegisterUserResponse {
   isVerified: boolean;
   role: string;
   plan: string;
-} 
+}

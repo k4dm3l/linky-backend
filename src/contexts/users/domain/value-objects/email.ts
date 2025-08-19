@@ -39,4 +39,4 @@ export class Email {
   toString(): string {
     return this.getValue();
   }
-} 
+}

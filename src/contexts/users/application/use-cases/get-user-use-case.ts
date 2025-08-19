@@ -1,14 +1,15 @@
-import { UserId } from "../../domain/value-objects/user-id";
-import { UserDomainService } from "../../domain/services/user-domain-service";
-import { GetUserQuery } from "../queries/get-user-query";
-import { GetUserResult } from "../results/application-result";
-import { UserDto } from "../dtos/user-dto";
 import { Logger } from "@/shared/logger/logger";
+
+import { UserDomainService } from "@/contexts/users/domain/services/user-domain-service";
+import { UserId } from "@/contexts/users/domain/value-objects/user-id";
+import { UserDto } from "@/contexts/users/application/dtos/user-dto";
+import { GetUserQuery } from "@/contexts/users/application/queries/get-user-query";
+import { GetUserResult } from "@/contexts/users/application/results/application-result";
 
 export class GetUserUseCase {
   constructor(
     private readonly userDomainService: UserDomainService,
-    private readonly logger: Logger
+    private readonly logger: Logger,
   ) {}
 
   async execute(query: GetUserQuery): Promise<GetUserResult> {
@@ -20,7 +21,7 @@ export class GetUserUseCase {
         return {
           success: false,
           error: "User ID is required",
-          errorCode: "VALIDATION_ERROR"
+          errorCode: "VALIDATION_ERROR",
         };
       }
 
@@ -40,27 +41,27 @@ export class GetUserUseCase {
         isActive: user.getIsActive(),
         isVerified: user.getIsVerified(),
         role: user.getRole().getValue(),
-        plan: user.getPlan().getValue()
+        plan: user.getPlan().getValue(),
       };
 
       this.logger.info("User retrieved successfully", { userId: userDto.id });
 
       return {
         success: true,
-        data: userDto
+        data: userDto,
       };
-
     } catch (error) {
-      this.logger.error("Failed to get user", { 
+      this.logger.error("Failed to get user", {
         error: error instanceof Error ? error.message : "Unknown error",
-        userId: query.userId 
+        userId: query.userId,
       });
 
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error occurred",
-        errorCode: "INTERNAL_ERROR"
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+        errorCode: "INTERNAL_ERROR",
       };
     }
   }
-} 
+}

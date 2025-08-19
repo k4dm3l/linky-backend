@@ -1,6 +1,6 @@
 export enum UserRoleEnum {
   ADMIN = "ADMIN",
-  USER = "USER"
+  USER = "USER",
 }
 
 export class UserRole {
@@ -10,7 +10,9 @@ export class UserRole {
 
   private validate(): void {
     if (!Object.values(UserRoleEnum).includes(this.value)) {
-      throw new Error(`Invalid user role: ${this.value}. Must be one of: ${Object.values(UserRoleEnum).join(", ")}`);
+      throw new Error(
+        `Invalid user role: ${this.value}. Must be one of: ${Object.values(UserRoleEnum).join(", ")}`,
+      );
     }
   }
 
@@ -46,4 +48,4 @@ export class UserRole {
   toString(): string {
     return this.value;
   }
-} 
+}

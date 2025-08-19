@@ -46,4 +46,3 @@ export class LinkCodeInvalidCharactersException extends Error {
     this.name = "LinkCodeInvalidCharactersException";
   }
 }
-

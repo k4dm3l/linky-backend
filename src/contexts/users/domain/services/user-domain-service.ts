@@ -1,9 +1,13 @@
-import { User } from "../entities/user";
-import { UserId } from "../value-objects/user-id";
-import { Email } from "../value-objects/email";
-import { UserName } from "../value-objects/user-name";
-import { UserRepository } from "../repositories/user-repository";
-import { UserAlreadyExistsError, UserNotFoundError, UserCannotBeDeletedError } from "../exceptions/user-exceptions";
+import { User } from "@/contexts/users/domain/entities/user";
+import {
+  UserAlreadyExistsError,
+  UserCannotBeDeletedError,
+  UserNotFoundError,
+} from "@/contexts/users/domain/exceptions/user-exceptions";
+import { UserRepository } from "@/contexts/users/domain/repositories/user-repository";
+import { Email } from "@/contexts/users/domain/value-objects/email";
+import { UserId } from "@/contexts/users/domain/value-objects/user-id";
+import { UserName } from "@/contexts/users/domain/value-objects/user-name";
 
 export class UserDomainService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -16,12 +20,7 @@ export class UserDomainService {
     }
 
     // Create new user with generated ID
-    const user = new User(
-      UserId.generate(),
-      email,
-      name,
-      new Date()
-    );
+    const user = new User(UserId.generate(), email, name, new Date());
 
     // Save to repository
     await this.userRepository.save(user);
@@ -101,9 +100,14 @@ export class UserDomainService {
 
     return {
       totalUsers: allUsers.length,
-      usersCreatedToday: allUsers.filter(user => user.getCreatedAt() >= today).length,
-      usersCreatedThisWeek: allUsers.filter(user => user.getCreatedAt() >= weekAgo).length,
-      usersCreatedThisMonth: allUsers.filter(user => user.getCreatedAt() >= monthAgo).length,
+      usersCreatedToday: allUsers.filter(user => user.getCreatedAt() >= today)
+        .length,
+      usersCreatedThisWeek: allUsers.filter(
+        user => user.getCreatedAt() >= weekAgo,
+      ).length,
+      usersCreatedThisMonth: allUsers.filter(
+        user => user.getCreatedAt() >= monthAgo,
+      ).length,
     };
   }
-} 
+}

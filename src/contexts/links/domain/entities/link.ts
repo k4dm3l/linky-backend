@@ -1,6 +1,6 @@
+import { LinkCode } from "@/contexts/links/domain/value-objects/link-code";
 import { LinkId } from "@/contexts/links/domain/value-objects/link-id";
 import { LinkOriginalUrl } from "@/contexts/links/domain/value-objects/link-original-url";
-import { LinkCode } from "@/contexts/links/domain/value-objects/link-code";
 import { LinkShortUrl } from "@/contexts/links/domain/value-objects/link-short-url";
 
 export class Link {
@@ -92,7 +92,7 @@ export class Link {
       this.createdAt,
     );
   }
-  
+
   setIsOneTimeLinkUsed(isOneTimeLinkUsed: boolean): Link {
     return new Link(
       this.id,

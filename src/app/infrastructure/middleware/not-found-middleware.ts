@@ -1,14 +1,15 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
 export function notFoundMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
   // Only handle requests that haven't been handled by any route
   if (res.headersSent) {
-    return next();
+    next();
+    return;
   }
 
   res.status(StatusCodes.NOT_FOUND).json({
@@ -19,4 +20,4 @@ export function notFoundMiddleware(
     path: req.originalUrl,
     method: req.method,
   });
-} 
+}

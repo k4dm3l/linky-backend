@@ -26,4 +26,4 @@ export class LinkId {
   toString(): string {
     return this.value;
   }
-} 
+}

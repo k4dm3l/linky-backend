@@ -1,16 +1,16 @@
 import { User } from "@/contexts/users/domain/entities/user";
-import { UserId } from "@/contexts/users/domain/value-objects/user-id";
 import { Email } from "@/contexts/users/domain/value-objects/email";
+import { UserId } from "@/contexts/users/domain/value-objects/user-id";
 
 // Generic transaction interface that works for both SQL and NoSQL
 export interface Transaction {
   // For SQL databases (Knex, TypeORM, etc.)
   commit(): Promise<void>;
   rollback(): Promise<void>;
-  
+
   // For NoSQL databases (MongoDB, etc.)
   abort(): Promise<void>;
-  
+
   // Generic transaction ID for tracking
   getId(): string;
 }
@@ -29,7 +29,11 @@ export interface UserRepository {
   findByDomain(domain: string, transaction?: Transaction): Promise<User[]>;
 
   // Pagination support
-  findWithPagination(offset: number, limit: number, transaction?: Transaction): Promise<{
+  findWithPagination(
+    offset: number,
+    limit: number,
+    transaction?: Transaction,
+  ): Promise<{
     users: User[];
     total: number;
     hasMore: boolean;
@@ -38,4 +42,4 @@ export interface UserRepository {
   // Bulk operations
   saveMany(users: User[], transaction?: Transaction): Promise<void>;
   deleteMany(ids: UserId[], transaction?: Transaction): Promise<void>;
-} 
+}

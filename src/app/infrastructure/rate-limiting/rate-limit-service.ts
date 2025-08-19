@@ -1,11 +1,22 @@
-import { RateLimitMiddleware, RateLimitMiddlewareFactory } from "./rate-limit-middleware";
 import { RateLimitConfig } from "./rate-limit-config";
+import {
+  RateLimitMiddleware,
+  RateLimitMiddlewareFactory,
+} from "./rate-limit-middleware";
 
 export interface RateLimitService {
-  getGlobalLimiter(): ReturnType<typeof RateLimitMiddlewareFactory.create>["global"];
-  getStrictLimiter(): ReturnType<typeof RateLimitMiddlewareFactory.create>["strict"];
-  getAuthLimiter(): ReturnType<typeof RateLimitMiddlewareFactory.create>["auth"];
-  createCustomLimiter(config: RateLimitConfig): ReturnType<typeof RateLimitMiddlewareFactory.create>["global"];
+  getGlobalLimiter(): ReturnType<
+    typeof RateLimitMiddlewareFactory.create
+  >["global"];
+  getStrictLimiter(): ReturnType<
+    typeof RateLimitMiddlewareFactory.create
+  >["strict"];
+  getAuthLimiter(): ReturnType<
+    typeof RateLimitMiddlewareFactory.create
+  >["auth"];
+  createCustomLimiter(
+    config: RateLimitConfig,
+  ): ReturnType<typeof RateLimitMiddlewareFactory.create>["global"];
 }
 
 export class ExpressRateLimitService implements RateLimitService {
@@ -30,4 +41,4 @@ export class ExpressRateLimitService implements RateLimitService {
   createCustomLimiter(config: RateLimitConfig) {
     return this.middleware.custom(config);
   }
-} 
+}

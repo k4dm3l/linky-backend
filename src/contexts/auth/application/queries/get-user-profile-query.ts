@@ -14,4 +14,4 @@ export interface GetUserProfileQueryResult {
   lastLoginAt?: Date;
   createdAt: Date;
   updatedAt: Date;
-} 
+}

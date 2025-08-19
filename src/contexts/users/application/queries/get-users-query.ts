@@ -3,4 +3,4 @@ export interface GetUsersQuery {
   limit?: number;
   name?: string;
   domain?: string;
-} 
+}

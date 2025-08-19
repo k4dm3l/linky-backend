@@ -7,7 +7,7 @@ export class JwtToken {
     }
 
     // Basic JWT format validation (header.payload.signature)
-    const parts = token.split('.');
+    const parts = token.split(".");
     if (parts.length !== 3) {
       throw new Error("Invalid JWT token format");
     }
@@ -26,4 +26,4 @@ export class JwtToken {
   equals(other: JwtToken): boolean {
     return this.value === other.value;
   }
-} 
+}

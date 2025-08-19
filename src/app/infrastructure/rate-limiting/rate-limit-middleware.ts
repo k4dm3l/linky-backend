@@ -1,11 +1,12 @@
 import { RequestHandler } from "express";
-import { 
-  createDefaultRateLimiter, 
-  createStrictRateLimiter, 
+
+import {
   createAuthRateLimiter,
-  RateLimitConfig,
+  createDefaultRateLimiter,
+  createStrictRateLimiter,
   customKeyGenerator,
-  customRateLimitHandler
+  customRateLimitHandler,
+  RateLimitConfig,
 } from "./rate-limit-config";
 
 export interface RateLimitMiddleware {
@@ -15,8 +16,8 @@ export interface RateLimitMiddleware {
   custom: (config: RateLimitConfig) => RequestHandler;
 }
 
-export class RateLimitMiddlewareFactory {
-  static create(): RateLimitMiddleware {
+export const RateLimitMiddlewareFactory = {
+  create(): RateLimitMiddleware {
     return {
       global: createDefaultRateLimiter(),
       strict: createStrictRateLimiter(),
@@ -28,7 +29,7 @@ export class RateLimitMiddlewareFactory {
           keyGenerator: config.keyGenerator || customKeyGenerator,
           handler: config.handler || customRateLimitHandler,
         });
-      }
+      },
     };
-  }
-} 
+  },
+};

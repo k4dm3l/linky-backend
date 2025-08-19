@@ -1,6 +1,6 @@
 export enum UserPlanEnum {
   STANDARD = "STANDARD",
-  PREMIUM = "PREMIUM"
+  PREMIUM = "PREMIUM",
 }
 
 export class UserPlan {
@@ -10,7 +10,9 @@ export class UserPlan {
 
   private validate(): void {
     if (!Object.values(UserPlanEnum).includes(this.value)) {
-      throw new Error(`Invalid user plan: ${this.value}. Must be one of: ${Object.values(UserPlanEnum).join(", ")}`);
+      throw new Error(
+        `Invalid user plan: ${this.value}. Must be one of: ${Object.values(UserPlanEnum).join(", ")}`,
+      );
     }
   }
 
@@ -50,4 +52,4 @@ export class UserPlan {
   toString(): string {
     return this.value;
   }
-} 
+}

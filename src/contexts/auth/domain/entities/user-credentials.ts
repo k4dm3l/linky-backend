@@ -1,21 +1,21 @@
 import { Email } from "@/contexts/users/domain/value-objects/email";
-import { Password } from "../value-objects/password";
+import { Password } from "@/contexts/auth/domain/value-objects/password";
 
 export class UserCredentials {
   constructor(
     private readonly email: Email,
     private readonly password: Password,
     private readonly userId: string,
-    private readonly isActive: boolean = true,
+    private readonly isActive = true,
     private readonly lastLoginAt?: Date,
     private readonly createdAt: Date = new Date(),
-    private readonly updatedAt: Date = new Date()
+    private readonly updatedAt: Date = new Date(),
   ) {}
 
   static create(
     email: Email,
     password: Password,
-    userId: string
+    userId: string,
   ): UserCredentials {
     return new UserCredentials(email, password, userId);
   }
@@ -56,7 +56,7 @@ export class UserCredentials {
       this.isActive,
       this.lastLoginAt,
       this.createdAt,
-      new Date()
+      new Date(),
     );
   }
 
@@ -68,7 +68,7 @@ export class UserCredentials {
       this.isActive,
       new Date(),
       this.createdAt,
-      new Date()
+      new Date(),
     );
   }
 
@@ -80,7 +80,7 @@ export class UserCredentials {
       false,
       this.lastLoginAt,
       this.createdAt,
-      new Date()
+      new Date(),
     );
   }
 
@@ -92,7 +92,7 @@ export class UserCredentials {
       true,
       this.lastLoginAt,
       this.createdAt,
-      new Date()
+      new Date(),
     );
   }
-} 
+}

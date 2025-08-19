@@ -4,7 +4,7 @@ export class Password {
   private readonly hashedValue: string;
   private readonly isHashed: boolean;
 
-  private constructor(value: string, isHashed: boolean = false) {
+  private constructor(value: string, isHashed = false) {
     this.hashedValue = value;
     this.isHashed = isHashed;
   }
@@ -28,7 +28,9 @@ export class Password {
     const hasNumbers = /\d/.test(plainPassword);
 
     if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
-      throw new Error("Password must contain at least one uppercase letter, one lowercase letter, and one number");
+      throw new Error(
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+      );
     }
 
     const hashedPassword = bcrypt.hashSync(plainPassword, 12);
@@ -54,4 +56,4 @@ export class Password {
   isHashedPassword(): boolean {
     return this.isHashed;
   }
-} 
+}

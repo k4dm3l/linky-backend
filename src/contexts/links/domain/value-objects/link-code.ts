@@ -1,8 +1,13 @@
-import { LinkCodeEmptyException, LinkCodeInvalidCharactersException, LinkCodeInvalidLengthException } from "@/contexts/links/domain/exceptions/link-exceptions";
+import {
+  LinkCodeEmptyException,
+  LinkCodeInvalidCharactersException,
+  LinkCodeInvalidLengthException,
+} from "@/contexts/links/domain/exceptions/link-exceptions";
 
 export class LinkCode {
   private static readonly CODE_LENGTH = 12;
-  private static readonly ALPHANUMERIC_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  private static readonly ALPHANUMERIC_CHARS =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
   constructor(private readonly value: string) {
     this.validate();
@@ -29,7 +34,9 @@ export class LinkCode {
   static generate(): LinkCode {
     let code = "";
     for (let i = 0; i < LinkCode.CODE_LENGTH; i++) {
-      const randomIndex = Math.floor(Math.random() * LinkCode.ALPHANUMERIC_CHARS.length);
+      const randomIndex = Math.floor(
+        Math.random() * LinkCode.ALPHANUMERIC_CHARS.length,
+      );
       code += LinkCode.ALPHANUMERIC_CHARS[randomIndex];
     }
     return new LinkCode(code);
@@ -42,7 +49,9 @@ export class LinkCode {
 
     let code = "";
     for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * LinkCode.ALPHANUMERIC_CHARS.length);
+      const randomIndex = Math.floor(
+        Math.random() * LinkCode.ALPHANUMERIC_CHARS.length,
+      );
       code += LinkCode.ALPHANUMERIC_CHARS[randomIndex];
     }
     return new LinkCode(code);
@@ -63,4 +72,4 @@ export class LinkCode {
   toString(): string {
     return this.value;
   }
-} 
+}

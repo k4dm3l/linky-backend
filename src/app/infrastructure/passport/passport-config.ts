@@ -1,7 +1,7 @@
 import passport from "passport";
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
+
 import { UserCredentialsRepository } from "@/contexts/auth/domain/repositories/user-credentials-repository";
-import { Email } from "@/contexts/users/domain/value-objects/email";
 
 export interface JwtPayload {
   userId: string;
@@ -12,7 +12,7 @@ export interface JwtPayload {
 
 export function configurePassport(
   userCredentialsRepository: UserCredentialsRepository,
-  userRepository?: any // Optional user repository for fetching user details
+  userRepository?: any, // Optional user repository for fetching user details
 ): void {
   const jwtSecret = process.env.JWT_SECRET || "your-secret-key";
 
@@ -20,21 +20,25 @@ export function configurePassport(
   const jwtStrategy = new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: jwtSecret as string,
+      secretOrKey: jwtSecret,
       ignoreExpiration: false,
     },
     async (payload: JwtPayload, done) => {
       try {
         // Find user credentials by userId
-        const userCredentials = await userCredentialsRepository.findByUserId(payload.userId);
-        
+        const userCredentials = await userCredentialsRepository.findByUserId(
+          payload.userId,
+        );
+
         if (!userCredentials) {
-          return done(null, false, { message: "User not found" });
+          done(null, false, { message: "User not found" });
+          return;
         }
 
         // Check if user is active
         if (!userCredentials.isUserActive()) {
-          return done(null, false, { message: "User account is deactivated" });
+          done(null, false, { message: "User account is deactivated" });
+          return;
         }
 
         // Return user info
@@ -43,11 +47,13 @@ export function configurePassport(
           email: userCredentials.getEmail().getValue(),
         };
 
-        return done(null, user);
+        done(null, user);
+        return;
       } catch (error) {
-        return done(error, false);
+        done(error, false);
+        return;
       }
-    }
+    },
   );
 
   passport.use(jwtStrategy);
@@ -68,20 +74,21 @@ export function configurePassport(
           return;
         }
       }
-      
+
       // Fallback: fetch from credentials repository
-      const userCredentials = await userCredentialsRepository.findByUserId(userId);
+      const userCredentials =
+        await userCredentialsRepository.findByUserId(userId);
       if (userCredentials) {
-        done(null, { 
-          userId: userCredentials.getUserId(), 
-          email: userCredentials.getEmail().getValue() 
+        done(null, {
+          userId: userCredentials.getUserId(),
+          email: userCredentials.getEmail().getValue(),
         });
         return;
       }
-      
+
       done(null, false);
     } catch (error) {
       done(error, null);
     }
   });
-} 
+}

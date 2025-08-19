@@ -1,8 +1,8 @@
-import { Email } from "@/contexts/users/domain/value-objects/email";
-import { Password } from "@/contexts/auth/domain/value-objects/password";
-import { UserName } from "@/contexts/users/domain/value-objects/user-name";
-import { UserRole } from "@/contexts/users/domain/value-objects/user-role";
-import { UserPlan } from "@/contexts/users/domain/value-objects/user-plan";
+// import { Password } from "@/contexts/auth/domain/value-objects/password";
+// import { Email } from "@/contexts/users/domain/value-objects/email";
+// import { UserName } from "@/contexts/users/domain/value-objects/user-name";
+// import { UserPlan } from "@/contexts/users/domain/value-objects/user-plan";
+// import { UserRole } from "@/contexts/users/domain/value-objects/user-role";
 
 export interface RegisterUserCommand {
   email: string;
@@ -22,4 +22,4 @@ export interface RegisterUserCommandResult {
   isVerified: boolean;
   role: string;
   plan: string;
-} 
+}

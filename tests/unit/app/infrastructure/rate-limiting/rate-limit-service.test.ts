@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { ExpressRateLimitService } from "@/app/infrastructure/rate-limiting/rate-limit-service";
+import { beforeEach, describe, expect, it } from "vitest";
+
 import { RateLimitConfig } from "@/app/infrastructure/rate-limiting/rate-limit-config";
+import { ExpressRateLimitService } from "@/app/infrastructure/rate-limiting/rate-limit-service";
 
 describe("ExpressRateLimitService", () => {
   let service: ExpressRateLimitService;
@@ -36,7 +37,7 @@ describe("ExpressRateLimitService", () => {
   describe("createCustomLimiter", () => {
     it("should create a custom rate limiter with provided config", () => {
       const customConfig: RateLimitConfig = {
-        windowMs: 60000, // 1 minute
+        windowMs: 60_000, // 1 minute
         max: 5,
         message: "Custom rate limit exceeded",
         standardHeaders: true,
@@ -52,12 +53,12 @@ describe("ExpressRateLimitService", () => {
 
     it("should handle config with custom key generator", () => {
       const customConfig: RateLimitConfig = {
-        windowMs: 60000,
+        windowMs: 60_000,
         max: 10,
         message: "Custom rate limit exceeded",
         standardHeaders: true,
         legacyHeaders: false,
-        keyGenerator: (req) => req.headers["x-api-key"] || req.ip,
+        keyGenerator: req => req.headers["x-api-key"] || req.ip,
       };
 
       const limiter = service.createCustomLimiter(customConfig);
@@ -65,4 +66,4 @@ describe("ExpressRateLimitService", () => {
       expect(typeof limiter).toBe("function");
     });
   });
-}); 
+});

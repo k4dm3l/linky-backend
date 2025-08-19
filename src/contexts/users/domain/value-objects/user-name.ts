@@ -9,7 +9,7 @@ export class UserName {
     }
 
     const trimmedValue = this.value.trim();
-    
+
     if (trimmedValue.length < 2) {
       throw new Error("User name must be at least 2 characters long");
     }
@@ -21,7 +21,9 @@ export class UserName {
     // Check for valid characters (letters, spaces, hyphens, apostrophes)
     const nameRegex = /^[a-zA-ZÀ-ÿ\s\-']+$/;
     if (!nameRegex.test(trimmedValue)) {
-      throw new Error("User name can only contain letters, spaces, hyphens, and apostrophes");
+      throw new Error(
+        "User name can only contain letters, spaces, hyphens, and apostrophes",
+      );
     }
 
     // Check for consecutive spaces
@@ -57,4 +59,4 @@ export class UserName {
   toString(): string {
     return this.getValue();
   }
-} 
+}

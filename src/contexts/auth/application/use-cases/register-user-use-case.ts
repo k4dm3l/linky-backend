@@ -1,29 +1,39 @@
-import { AuthDomainService } from "@/contexts/auth/domain/services/auth-domain-service";
-import { RegisterUserCommand, RegisterUserCommandResult } from "@/contexts/auth/application/commands/register-user-command";
-import { AuthResult, AuthResultBuilder } from "@/contexts/auth/application/results/auth-result";
-import { Email } from "@/contexts/users/domain/value-objects/email";
-import { UserName } from "@/contexts/users/domain/value-objects/user-name";
-import { Password } from "@/contexts/auth/domain/value-objects/password";
-import { Logger } from "@/shared/logger/logger";
-import { UserRepository } from "@/contexts/users/domain/repositories/user-repository";
-import { User } from "@/contexts/users/domain/entities/user";
-import { UserId } from "@/contexts/users/domain/value-objects/user-id";
-import { UserRole } from "@/contexts/users/domain/value-objects/user-role";
-import { UserPlan } from "@/contexts/users/domain/value-objects/user-plan";
-import { TransactionManager } from "@/contexts/shared/infrastructure/transaction/transaction-manager";
 import { v4 as uuidv4 } from "uuid";
+
+import { Logger } from "@/shared/logger/logger";
+
+import {
+  RegisterUserCommand,
+  RegisterUserCommandResult,
+} from "@/contexts/auth/application/commands/register-user-command";
+import {
+  AuthResult,
+  AuthResultBuilder,
+} from "@/contexts/auth/application/results/auth-result";
+import { AuthDomainService } from "@/contexts/auth/domain/services/auth-domain-service";
+import { Password } from "@/contexts/auth/domain/value-objects/password";
+import { TransactionManager } from "@/contexts/shared/infrastructure/transaction/transaction-manager";
+import { User } from "@/contexts/users/domain/entities/user";
+import { UserRepository } from "@/contexts/users/domain/repositories/user-repository";
+import { Email } from "@/contexts/users/domain/value-objects/email";
+import { UserId } from "@/contexts/users/domain/value-objects/user-id";
+import { UserName } from "@/contexts/users/domain/value-objects/user-name";
+import { UserPlan } from "@/contexts/users/domain/value-objects/user-plan";
+import { UserRole } from "@/contexts/users/domain/value-objects/user-role";
 
 export class RegisterUserUseCase {
   constructor(
     private readonly authDomainService: AuthDomainService,
     private readonly userRepository: UserRepository,
     private readonly logger: Logger,
-    private readonly transactionManager: TransactionManager
+    private readonly transactionManager: TransactionManager,
   ) {}
 
-  async execute(command: RegisterUserCommand): Promise<AuthResult<RegisterUserCommandResult>> {
+  async execute(
+    command: RegisterUserCommand,
+  ): Promise<AuthResult<RegisterUserCommandResult>> {
     let transaction: any;
-    
+
     try {
       this.logger.info("Registering new user", { email: command.email });
 
@@ -31,7 +41,7 @@ export class RegisterUserUseCase {
       if (!command.email || !command.password || !command.name) {
         return AuthResultBuilder.error(
           "Email, password, and name are required",
-          "VALIDATION_ERROR"
+          "VALIDATION_ERROR",
         );
       }
 
@@ -52,7 +62,7 @@ export class RegisterUserUseCase {
       } catch (error) {
         return AuthResultBuilder.error(
           error instanceof Error ? error.message : "Invalid email format",
-          "INVALID_EMAIL"
+          "INVALID_EMAIL",
         );
       }
 
@@ -61,7 +71,7 @@ export class RegisterUserUseCase {
       } catch (error) {
         return AuthResultBuilder.error(
           error instanceof Error ? error.message : "Invalid password",
-          "INVALID_PASSWORD"
+          "INVALID_PASSWORD",
         );
       }
 
@@ -70,7 +80,7 @@ export class RegisterUserUseCase {
       } catch (error) {
         return AuthResultBuilder.error(
           error instanceof Error ? error.message : "Invalid name format",
-          "INVALID_NAME"
+          "INVALID_NAME",
         );
       }
 
@@ -79,16 +89,18 @@ export class RegisterUserUseCase {
       } catch (error) {
         return AuthResultBuilder.error(
           error instanceof Error ? error.message : "Invalid role format",
-          "INVALID_ROLE"
+          "INVALID_ROLE",
         );
       }
 
       try {
-        plan = command.plan ? UserPlan.create(command.plan) : UserPlan.standard();
+        plan = command.plan
+          ? UserPlan.create(command.plan)
+          : UserPlan.standard();
       } catch (error) {
         return AuthResultBuilder.error(
           error instanceof Error ? error.message : "Invalid plan format",
-          "INVALID_PLAN"
+          "INVALID_PLAN",
         );
       }
 
@@ -104,7 +116,7 @@ export class RegisterUserUseCase {
           email,
           password,
           userId,
-          transaction
+          transaction,
         );
 
         // Create user entity
@@ -117,7 +129,7 @@ export class RegisterUserUseCase {
           true,
           false,
           role,
-          plan
+          plan,
         );
 
         // Save user
@@ -126,53 +138,55 @@ export class RegisterUserUseCase {
         // Commit transaction
         await this.transactionManager.commitTransaction(transaction);
 
-        this.logger.info("User registered successfully", { 
+        this.logger.info("User registered successfully", {
           email: command.email,
-          userId 
+          userId,
         });
 
-        return AuthResultBuilder.success({
-          userId,
-          email: command.email,
-          name: command.name,
-          profileImage: user.getProfileImage(),
-          isActive: user.getIsActive(),
-          isVerified: user.getIsVerified(),
-          role: user.getRole().getValue().toString(),
-          plan: user.getPlan().getValue().toString(),
-        }, "User registered successfully");
-
+        return AuthResultBuilder.success(
+          {
+            userId,
+            email: command.email,
+            name: command.name,
+            profileImage: user.getProfileImage(),
+            isActive: user.getIsActive(),
+            isVerified: user.getIsVerified(),
+            role: user.getRole().getValue().toString(),
+            plan: user.getPlan().getValue().toString(),
+          },
+          "User registered successfully",
+        );
       } catch (error) {
         // Only try to rollback if the transaction hasn't been committed
         try {
-          if (transaction && !(transaction as any).isCommitted) {
+          if (transaction && !transaction.isCommitted) {
             await this.transactionManager.rollbackTransaction(transaction);
           }
         } catch (rollbackError) {
-          this.logger.warn("Failed to rollback transaction", { 
+          this.logger.warn("Failed to rollback transaction", {
             transactionId: transaction?.getId(),
-            rollbackError 
+            rollbackError,
           });
         }
         throw error;
       }
-
     } catch (error) {
-      this.logger.error("Error registering user", { error, email: command.email });
-      
+      this.logger.error("Error registering user", {
+        error,
+        email: command.email,
+      });
+
       if (error instanceof Error) {
-        return AuthResultBuilder.error(
-          error.message,
-          "REGISTRATION_ERROR",
-          { originalError: error.message }
-        );
+        return AuthResultBuilder.error(error.message, "REGISTRATION_ERROR", {
+          originalError: error.message,
+        });
       }
 
       return AuthResultBuilder.error(
         "An unexpected error occurred during registration",
         "UNKNOWN_ERROR",
-        { originalError: String(error) }
+        { originalError: String(error) },
       );
     }
   }
-} 
+}

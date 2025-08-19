@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
-import passport from "passport";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import passport from "passport";
 
 declare global {
   namespace Express {
@@ -18,39 +18,43 @@ export interface AuthenticatedRequest extends Request {
 export function authenticateJwt(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
-  passport.authenticate("jwt", { session: false }, (err: any, user: any, info: any) => {
-    if (err) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        error: "Authentication error",
-        message: "An error occurred during authentication"
-      });
-    }
+  passport.authenticate(
+    "jwt",
+    { session: false },
+    (err: any, user: any, info: any) => {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          error: "Authentication error",
+          message: "An error occurred during authentication",
+        });
+      }
 
-    if (!user) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({
-        error: "Unauthorized",
-        message: info?.message || "Invalid or missing authentication token"
-      });
-    }
+      if (!user) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+          error: "Unauthorized",
+          message: info?.message || "Invalid or missing authentication token",
+        });
+      }
 
-    // Attach user to request
-    req.user = user;
-    next();
-  })(req, res, next);
+      // Attach user to request
+      req.user = user;
+      next();
+    },
+  )(req, res, next);
 }
 
 export function optionalAuthenticateJwt(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
   passport.authenticate("jwt", { session: false }, (err: any, user: any) => {
     if (err) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         error: "Authentication error",
-        message: "An error occurred during authentication"
+        message: "An error occurred during authentication",
       });
     }
 
@@ -58,7 +62,7 @@ export function optionalAuthenticateJwt(
     if (user) {
       req.user = user;
     }
-    
+
     next();
   })(req, res, next);
-} 
+}
